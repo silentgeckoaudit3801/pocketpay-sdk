@@ -1,3 +1,5 @@
+export { POCKETPAY_ERROR_CODES, POCKETPAY_ERROR_CODE_CATEGORIES, isPocketPayErrorCode } from './codes';
+export type { PocketPayErrorCode, PocketPayErrorCodeCategory } from './codes';
 export type { ResultWarning, RecoveryHint } from '../types';
 
 // ─── Error Classification ───────────────────────────────────────────────────

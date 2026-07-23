@@ -65,6 +65,30 @@ These errors are related to Smart Contract operations on the Soroban network.
 *   `VAULT_BALANCE_ERROR`: Simulation failed while querying the vault balance.
 
 ---
+## Public Error Code Standard
+
+`PocketPayError.code` is part of the SDK's public contract. Applications should branch on stable codes from `POCKETPAY_ERROR_CODES` instead of parsing human-readable messages.
+
+```typescript
+import { POCKETPAY_ERROR_CODES, isPocketPayErrorCode, PocketPayError } from '@axionvera/pocketpay-sdk';
+
+if (error instanceof PocketPayError && error.code === POCKETPAY_ERROR_CODES.ACCOUNT_NOT_FOUND) {
+  showActivationPrompt();
+}
+
+if (error instanceof PocketPayError && isPocketPayErrorCode(error.code)) {
+  reportSdkError({ code: error.code, statusCode: error.statusCode });
+}
+```
+
+### Naming and migration rules
+
+- Error codes are uppercase `SNAKE_CASE` and describe the stable failure category, not a full sentence.
+- Existing codes must not be renamed or removed in a patch or minor release. Add a new code and document migration guidance instead.
+- Messages may become clearer over time, but they must remain user-safe and must not include secrets, seed phrases, raw signed transactions, or access tokens.
+- Use `POCKETPAY_ERROR_CODE_CATEGORIES` when an app wants broad handling for validation, network, transaction, trustline, Soroban, or configuration failures.
+
+---
 
 ## Implementation Patterns & Examples
 

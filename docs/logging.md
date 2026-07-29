@@ -8,15 +8,19 @@ Secret keys grant full control over Stellar accounts. Never log them.
 
 ### Unsafe
 
+```typescript
 console.log('Using key:', secretKey);
 logger.info('Signing with', { secretKey });
 console.error('Failed to sign', { key: secretKey, error });
+```
 
 ### Safe
 
+```typescript
 console.log('Signing transaction from public key:', publicKey);
 logger.info('Transaction signed', { publicKey, txHash });
 console.error('Signing failed', { publicKey, error: err.message });
+```
 
 ## Data That Must Never Be Logged
 
@@ -31,6 +35,7 @@ third-party log aggregation systems:
   push tokens
 - Complete error objects from wallet, signing, or Horizon/Soroban submission
   paths when those objects may include request bodies or user input
+
 ## Safe Identifiers to Log
 
 These are safe to include in logs:
@@ -48,6 +53,7 @@ These are safe to include in logs:
 
 When logging errors from the SDK, include structured metadata but exclude secrets:
 
+```typescript
 try {
   await sdk.sendPayment({ destination, amount, secretKey });
 } catch (error) {
@@ -61,6 +67,7 @@ try {
   }
   throw error;
 }
+```
 
 ## Debug Logging Expectations
 
@@ -71,14 +78,14 @@ structured fields that are already public or derived from public data.
 ### Unsafe Debug Logging
 
 ```typescript
-logger.debug("submitting payment", { secretKey, transactionXdr, requestBody });
-logger.debug("wallet created", wallet);
+logger.debug('submitting payment', { secretKey, transactionXdr, requestBody });
+logger.debug('wallet created', wallet);
 ```
 
 ### Safe Debug Logging
 
 ```typescript
-logger.debug("submitting payment", {
+logger.debug('submitting payment', {
   sourcePublicKey,
   destinationPublicKey,
   assetCode,
@@ -86,7 +93,7 @@ logger.debug("submitting payment", {
   horizonNetworkPassphrase,
 });
 
-logger.debug("payment submitted", {
+logger.debug('payment submitted', {
   txHash,
   ledger,
   operationCount,
@@ -95,17 +102,23 @@ logger.debug("payment submitted", {
 
 When in doubt, log an event name, public account, transaction hash, ledger, or
 SDK error code instead of the raw input that produced it.
+
 ## Environment-Specific Logging
 
 ### Development
-More detail is acceptable for debugging. Still exclude secret keys.
+
+More detail is acceptable for debugging. Still exclude secret keys, raw
+transactions, authorization values, and unredacted user payloads.
 
 ### Production
+
 Log only what is needed for monitoring. Redact or omit all sensitive fields.
 
 ## Security Checklist
 
 - Secret keys never appear in log output
+- Raw signed transactions and full transaction payloads are not logged
+- Authorization headers, API keys, bearer tokens, and session identifiers are redacted
 - Log aggregation services have access controls
 - Log retention policies are defined
 - Error stack traces are suppressed in production
